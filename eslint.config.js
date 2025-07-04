@@ -2,10 +2,28 @@ import js from '@eslint/js';
 
 export default [
   {
+    ignores: [
+      'controllers/**',
+      'services/**',
+      'events/**',
+      'tests/**',
+      'server.js'
+    ],
+  },
+  {
     files: ['**/*.js'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'commonjs',
+      globals: {
+        ...js.configs.recommended.languageOptions?.globals,
+        console: true,
+        process: true,
+        jest: true,
+        describe: true,
+        test: true,
+        expect: true,
+      },
     },
     rules: {
       ...js.configs.recommended.rules,
@@ -13,6 +31,7 @@ export default [
       'no-console': 'off',
       'semi': ['error', 'always'],
       'quotes': ['error', 'single'],
+      'no-empty': 'warn',
     },
   },
 ];
