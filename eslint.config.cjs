@@ -1,6 +1,6 @@
-import js from '@eslint/js';
+const js = require('@eslint/js');
 
-export default [
+module.exports = [
   {
     ignores: [
       'controllers/**',
@@ -16,7 +16,7 @@ export default [
       ecmaVersion: 'latest',
       sourceType: 'commonjs',
       globals: {
-        ...js.configs.recommended.languageOptions?.globals,
+        ...js.configs.recommended.languageOptions.globals,
         console: true,
         process: true,
         jest: true,
@@ -35,3 +35,4 @@ export default [
     },
   },
 ];
+
