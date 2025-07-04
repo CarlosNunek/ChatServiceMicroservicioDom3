@@ -16,7 +16,6 @@ module.exports = [
       ecmaVersion: 'latest',
       sourceType: 'commonjs',
       globals: {
-        ...js.configs.recommended.languageOptions.globals,
         console: true,
         process: true,
         jest: true,
