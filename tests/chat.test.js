@@ -4,13 +4,16 @@ describe('WebSocket Chat Service', () => {
   let ws;
 
   beforeAll((done) => {
-    ws = new WebSocket(`ws://localhost:${process.env.PORT}`);
+    const PORT = process.env.PORT || 4000;
+    ws = new WebSocket(`ws://localhost:${PORT}`);
     ws.on('open', () => done());
   });
 
   afterAll(() => {
+  if (ws && ws.readyState === WebSocket.OPEN) {
     ws.close();
-  });
+  }
+});
 
   test('Debe rechazar una cédula inválida', (done) => {
     ws.send(JSON.stringify({ tipo: 'autenticacion', cedula: '0000000000' }));
