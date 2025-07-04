@@ -51,4 +51,4 @@ function handleConnection(ws) {
   })
 }
 
-module.exports = { handleConnection }
+module.exports = { handleConnection, validarCedula}
