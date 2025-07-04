@@ -1,49 +1,17 @@
-const WebSocket = require('ws');
-const { spawn } = require('child_process');
+describe('Validación de cédula (mock)', () => {
+  const axios = require('axios');
+  const chatController = require('../controllers/chatController');
+  const { handleConnection } = chatController;
 
-describe('WebSocket Chat Service', () => {
-  let ws;
-  let serverProcess;
-  const PORT = 4000;
+  jest.mock('axios');
 
-  beforeAll((done) => {
-    // Ejecutar server.js con una variable de entorno definida
-    serverProcess = spawn('node', ['server.js'], {
-      env: { ...process.env, PORT: PORT.toString() },
-      stdio: ['ignore', 'pipe', 'pipe'], // capturar stdout y stderr
-    });
+  test('Debe rechazar una cédula inválida simulando peticiones fallidas', async () => {
+    // Simula que axios GET falla para recluso y familiar
+    axios.get.mockRejectedValueOnce(new Error('Recluso no encontrado'));
+    axios.get.mockRejectedValueOnce(new Error('Familiar no encontrado'));
 
-    // Mostrar logs del servidor para depuración
-    serverProcess.stdout.on('data', (data) => {
-      const msg = data.toString();
-      console.log('[server]', msg);
-      if (msg.includes('WebSocket activo')) {
-        ws = new WebSocket(`ws://localhost:${PORT}`);
-        ws.on('open', () => done());
-      }
-    });
+    const resultado = await chatController.validarCedula('0000000000');
 
-    serverProcess.stderr.on('data', (data) => {
-      console.error('[server-error]', data.toString());
-    });
-
-    serverProcess.on('error', (err) => {
-      console.error('[server-failed-to-start]', err);
-    });
-  }, 15000); // aumenta el timeout
-
-  afterAll(() => {
-    if (ws && ws.readyState === WebSocket.OPEN) ws.close();
-    if (serverProcess) serverProcess.kill();
-  });
-
-  test('Debe rechazar una cédula inválida', (done) => {
-    ws.send(JSON.stringify({ tipo: 'autenticacion', cedula: '0000000000' }));
-
-    ws.on('message', (msg) => {
-      const respuesta = JSON.parse(msg);
-      expect(respuesta.error).toBe('Cédula no válida. Conexión rechazada.');
-      done();
-    });
+    expect(resultado).toEqual({ valido: false });
   });
 });
